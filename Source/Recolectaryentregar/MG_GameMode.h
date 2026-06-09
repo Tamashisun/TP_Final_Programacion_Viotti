@@ -10,18 +10,18 @@ class RECOLECTARYENTREGAR_API AMG_GameMode : public AGameModeBase
 
 public:
     AMG_GameMode();
-
     virtual void BeginPlay() override;
 
-    UFUNCTION()
-    void CheckVictoryCondition();
-
-    UFUNCTION()
-    void EndGame(bool bWinner);
-
     UPROPERTY(EditDefaultsOnly)
-    float MatchDuration = 120.f;
+    float MatchDuration = 180.f;
 
 private:
+    void TickCountdown();
+    void TickMatchTimer();
+    void EndGame();
+
+    FTimerHandle CountdownTimerHandle;
     FTimerHandle MatchTimerHandle;
+
+    int32 CurrentCountdown = 3;
 };
