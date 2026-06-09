@@ -18,6 +18,14 @@ AMG_Collectable::AMG_Collectable()
 void AMG_Collectable::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Asignar puntos según tipo
+	switch (FruitType)
+	{
+	case EFruitType::Banana:   PointValue = 1; break;
+	case EFruitType::Apple:  PointValue = 2; break;
+	case EFruitType::Strawberry: PointValue = 3; break;
+	}
 }
 
 void AMG_Collectable::GetLifetimeReplicatedProps(
@@ -26,11 +34,11 @@ void AMG_Collectable::GetLifetimeReplicatedProps(
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AMG_Collectable, bIsPickedUp);
 	DOREPLIFETIME(AMG_Collectable, PointValue);
+	DOREPLIFETIME(AMG_Collectable, FruitType);
 }
 
 void AMG_Collectable::OnRep_IsPickedUp()
 {
-	// Mostrar u ocultar el objeto en todos los clientes
 	Mesh->SetVisibility(!bIsPickedUp);
 	CollisionSphere->SetCollisionEnabled(
 		bIsPickedUp ? ECollisionEnabled::NoCollision
@@ -43,22 +51,17 @@ void AMG_Collectable::PickUp()
 	if (HasAuthority() && !bIsPickedUp)
 	{
 		bIsPickedUp = true;
-		OnRep_IsPickedUp(); // Llamar manualmente en servidor
-
-		// Timer para reaparecer
-		GetWorldTimerManager().SetTimer(
-			RespawnTimerHandle, this,
-			&AMG_Collectable::Respawn,
-			RespawnTime, false
-		);
+		OnRep_IsPickedUp();
+		// El spawner se encarga de spawnear una nueva fruta
+		// Esta se destruye después de un frame para que el character procese el overlap
+		SelfDestroy();
 	}
 }
 
-void AMG_Collectable::Respawn()
+void AMG_Collectable::SelfDestroy()
 {
 	if (HasAuthority())
 	{
-		bIsPickedUp = false;
-		OnRep_IsPickedUp();
+		Destroy();
 	}
 }

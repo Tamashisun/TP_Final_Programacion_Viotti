@@ -3,6 +3,14 @@
 #include "GameFramework/Actor.h"
 #include "MG_Collectable.generated.h"
 
+UENUM(BlueprintType)
+enum class EFruitType : uint8
+{
+	Banana      UMETA(DisplayName = "Banana"),
+	Apple     UMETA(DisplayName = "Apple"),
+	Strawberry    UMETA(DisplayName = "Strawberry")
+};
+
 UCLASS()
 class RECOLECTARYENTREGAR_API AMG_Collectable : public AActor
 {
@@ -10,43 +18,34 @@ class RECOLECTARYENTREGAR_API AMG_Collectable : public AActor
 
 public:
 	AMG_Collectable();
-
 	virtual void BeginPlay() override;
 
-	// Mesh visible del objeto
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* Mesh;
 
-	// Colision para detectar overlap
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class USphereComponent* CollisionSphere;
 
-	// Puntos que vale este objeto
+	// Tipo de fruta — define el PointValue automáticamente
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated)
+	EFruitType FruitType = EFruitType::Banana;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated)
 	int32 PointValue = 1;
 
-	// Si ya fue recogido
 	UPROPERTY(ReplicatedUsing = OnRep_IsPickedUp, BlueprintReadOnly)
 	bool bIsPickedUp = false;
 
 	UFUNCTION()
 	void OnRep_IsPickedUp();
 
-	// Llamado cuando el jugador lo recoge
 	UFUNCTION(BlueprintCallable)
 	void PickUp();
 
-	// Llamado para reaparecer
-	UFUNCTION()
-	void Respawn();
+	// Ya no hace respawn — el spawner crea una nueva
+	void SelfDestroy();
 
 	virtual void GetLifetimeReplicatedProps(
 		TArray<FLifetimeProperty>& OutLifetimeProps
 	) const override;
-
-private:
-	FTimerHandle RespawnTimerHandle;
-
-	UPROPERTY(EditDefaultsOnly)
-	float RespawnTime = 10.f;
 };
