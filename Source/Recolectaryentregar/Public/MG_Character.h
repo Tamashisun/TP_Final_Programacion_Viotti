@@ -37,6 +37,10 @@ public:
     UPROPERTY(ReplicatedUsing = OnRep_IsCarrying, BlueprintReadOnly)
     bool bIsCarrying = false;
 
+    // La fruta que está cargando actualmente
+    UPROPERTY(Replicated, BlueprintReadOnly)
+    int32 CarriedPointValue = 0;
+    
     UFUNCTION()
     void OnRep_IsCarrying();
 

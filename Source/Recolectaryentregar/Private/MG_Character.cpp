@@ -93,7 +93,7 @@ void AMG_Character::GetLifetimeReplicatedProps(
     TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    DOREPLIFETIME(AMG_Character, bIsCarrying);
+    DOREPLIFETIME(AMG_Character, CarriedPointValue);
 }
 
 void AMG_Character::OnRep_IsCarrying()
