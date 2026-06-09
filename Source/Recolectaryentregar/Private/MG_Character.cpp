@@ -53,7 +53,7 @@ void AMG_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
     }
 }
 
-// ── Input Handlers ────────────────────────────────────────────────────────────
+//  Input Handlers 
 
 void AMG_Character::DoMove(const FInputActionValue& Value)
 {
@@ -87,7 +87,7 @@ void AMG_Character::DoJumpEnd()
     StopJumping();
 }
 
-// ── Replicación ───────────────────────────────────────────────────────────────
+//  Replicacion 
 
 void AMG_Character::GetLifetimeReplicatedProps(
     TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -102,7 +102,7 @@ void AMG_Character::OnRep_IsCarrying()
         bIsCarrying ? TEXT("Carrying") : TEXT("Empty"));
 }
 
-// ── RPCs ──────────────────────────────────────────────────────────────────────
+//  RPCs 
 
 void AMG_Character::Server_PickupObject_Implementation()
 {
@@ -123,6 +123,7 @@ void AMG_Character::Server_DeliverObject_Implementation()
     if (HasAuthority())
     {
         bIsCarrying = false;
+        CarriedPointValue = 0;
     }
 }
 
@@ -136,7 +137,7 @@ void AMG_Character::Multicast_PlayPickupEffect_Implementation()
     UE_LOG(LogTemp, Warning, TEXT("Pickup effect played on all clients"));
 }
 
-// ── Overlap ───────────────────────────────────────────────────────────────────
+//  Overlap 
 
 void AMG_Character::OnOverlapBegin(
     UPrimitiveComponent* OverlappedComp,
@@ -150,8 +151,9 @@ void AMG_Character::OnOverlapBegin(
     if (bIsCarrying) return;
 
     AMG_Collectable* Collectable = Cast<AMG_Collectable>(OtherActor);
-    if (Collectable)
+    if (Collectable && !bIsCarrying)
     {
+        CarriedPointValue = Collectable->PointValue;
         Server_PickupObject();
         Collectable->PickUp();
     }

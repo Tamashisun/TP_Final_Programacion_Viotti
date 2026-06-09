@@ -20,18 +20,18 @@ void AMG_FruitSpawner::BeginPlay()
 
 void AMG_FruitSpawner::ScheduleNextSpawn(EFruitType Type)
 {
-    float MinTime = 5.f;
-    float MaxTime = 10.f;
+    float MinTime = 1.f;
+    float MaxTime = 5.f;
     FTimerHandle* Handle = &BananaTimer;
 
     switch (Type)
     {
         case EFruitType::Banana:
-            MinTime = 5.f; MaxTime = 10.f;
+            MinTime = 1.f; MaxTime = 5.f;
             Handle = &BananaTimer;
             break;
         case EFruitType::Apple:
-            MinTime = 10.f; MaxTime = 30.f;
+            MinTime = 5.f; MaxTime = 20.f;
             Handle = &AppleTimer;
             break;
         case EFruitType::Strawberry:
