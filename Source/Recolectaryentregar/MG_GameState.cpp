@@ -9,6 +9,8 @@ void AMG_GameState::GetLifetimeReplicatedProps(
     DOREPLIFETIME(AMG_GameState, TimeRemaining);
     DOREPLIFETIME(AMG_GameState, GlobalScore);
     DOREPLIFETIME(AMG_GameState, bGameActive);
+    DOREPLIFETIME(AMG_GameState, ScoreTeamRed);
+    DOREPLIFETIME(AMG_GameState, ScoreTeamBlue);
 }
 
 void AMG_GameState::OnRep_GameActive()

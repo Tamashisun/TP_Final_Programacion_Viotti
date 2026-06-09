@@ -48,23 +48,25 @@ void AMG_DeliveryZone::OnOverlapBegin(
     if (!HasAuthority()) return;
 
     AMG_Character* Character = Cast<AMG_Character>(OtherActor);
-    if (!Character) return;
+    if (!Character || !Character->bIsCarrying) return;
 
-    // Verificar que el jugador lleva un objeto
-    if (!Character->bIsCarrying) return;
-
-    // Verificar que el jugador es del mismo equipo
     AMG_PlayerState* PS = Character->GetPlayerState<AMG_PlayerState>();
     if (!PS || PS->TeamID != TeamID) return;
 
-    // Entregar objeto
+    // Tomar el valor antes de entregar
+    int32 Points = Character->CarriedPointValue;
+
     Character->Server_DeliverObject();
 
-    // Sumar puntaje al GameState
     AMG_GameState* GS = GetWorld()->GetGameState<AMG_GameState>();
-    if (GS)
+    if (GS && Points > 0)
     {
-        GS->GlobalScore += 1;
-        PS->IndividualScore += 1;
+        PS->IndividualScore += Points;
+
+        // Sumar al equipo correcto en GameState
+        if (TeamID == 0)
+            GS->ScoreTeamRed += Points;
+        else
+            GS->ScoreTeamBlue += Points;
     }
 }
