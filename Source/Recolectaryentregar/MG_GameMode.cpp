@@ -8,6 +8,14 @@ AMG_GameMode::AMG_GameMode()
 void AMG_GameMode::BeginPlay()
 {
     Super::BeginPlay();
+    
+    CurrentCountdown = CountdownDuration;
+
+    AMG_GameState* GS = GetGameState<AMG_GameState>();
+    if (GS)
+    {
+        GS->SetMatchTimer(MatchDuration);
+    }
 
     GetWorldTimerManager().SetTimer(
         CountdownTimerHandle, this,

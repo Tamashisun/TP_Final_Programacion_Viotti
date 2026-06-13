@@ -15,6 +15,9 @@ public:
     UPROPERTY(EditDefaultsOnly)
     float MatchDuration = 180.f;
 
+    UPROPERTY(EditDefaultsOnly)
+    int32 CountdownDuration = 3;
+
 private:
     void TickCountdown();
     void TickMatchTimer();

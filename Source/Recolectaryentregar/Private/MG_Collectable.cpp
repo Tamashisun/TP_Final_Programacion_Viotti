@@ -48,14 +48,13 @@ void AMG_Collectable::OnRep_IsPickedUp()
 
 void AMG_Collectable::PickUp()
 {
-	if (HasAuthority() && !bIsPickedUp)
-	{
-		bIsPickedUp = true;
-		OnRep_IsPickedUp();
-		// El spawner se encarga de spawnear una nueva fruta
-		// Esta se destruye después de un frame para que el character procese el overlap
-		SelfDestroy();
-	}
+    if (HasAuthority() && !bIsPickedUp)
+    {
+        bIsPickedUp = true;
+        CollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision); // ← agregar esto
+        OnRep_IsPickedUp();
+        SelfDestroy();
+    }
 }
 
 void AMG_Collectable::SelfDestroy()

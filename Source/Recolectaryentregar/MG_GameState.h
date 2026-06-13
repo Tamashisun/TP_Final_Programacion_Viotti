@@ -17,9 +17,6 @@ class RECOLECTARYENTREGAR_API AMG_GameState : public AGameStateBase
     GENERATED_BODY()
 
 public:
-    UPROPERTY(ReplicatedUsing = OnRep_GameActive, BlueprintReadOnly)
-    bool bGameActive = false;
-
     UPROPERTY(Replicated, BlueprintReadOnly)
     float TimeRemaining = 180.f;
 
@@ -32,21 +29,28 @@ public:
     UPROPERTY(Replicated, BlueprintReadOnly)
     int32 ScoreTeamBlue = 0;
 
-    UPROPERTY(ReplicatedUsing = OnRep_MatchPhase, BlueprintReadOnly)
+    UPROPERTY(ReplicatedUsing = OnRep_GameActive, BlueprintReadOnly)
+    bool bGameActive = false;
+
+    UPROPERTY(Replicated, BlueprintReadOnly)
     EMatchPhase MatchPhase = EMatchPhase::Countdown;
 
     UPROPERTY(Replicated, BlueprintReadOnly)
-    int32 CountdownValue = 3;
+    int32 CountdownValue = 0;
+    
+    UPROPERTY(Replicated, BlueprintReadOnly)
+    int32 FruitsTeamRed = 0;
+
+    UPROPERTY(Replicated, BlueprintReadOnly)
+    int32 FruitsTeamBlue = 0;
 
     UFUNCTION()
     void OnRep_GameActive();
 
-    UFUNCTION()
-    void OnRep_MatchPhase();
-
+    // Setters usados por el GameMode
     void SetMatchPhase(EMatchPhase NewPhase);
-    void SetCountdownValue(int32 Value);
-    void SetMatchTimer(float Value);
+    void SetCountdownValue(int32 NewValue);
+    void SetMatchTimer(float NewTime);
 
     virtual void GetLifetimeReplicatedProps(
         TArray<FLifetimeProperty>& OutLifetimeProps

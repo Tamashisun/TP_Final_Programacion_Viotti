@@ -53,26 +53,23 @@ void AMG_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
     }
 }
 
-//  Input Handlers 
+// ── Input Handlers ────────────────────────────────────────────────────────────
 
 void AMG_Character::DoMove(const FInputActionValue& Value)
 {
     FVector2D MovementVector = Value.Get<FVector2D>();
-    if (Controller)
-    {
-        const FRotator Rotation = Controller->GetControlRotation();
-        const FRotator YawRotation(0, Rotation.Yaw, 0);
-        const FVector ForwardDir = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-        const FVector RightDir   = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-        AddMovementInput(ForwardDir, MovementVector.Y); // W/S
-        AddMovementInput(RightDir,   MovementVector.X); // A/D
-    }
+
+    // Movimiento relativo al mundo (camara fija top-down)
+    const FVector ForwardDir = FVector(1.f, 0.f, 0.f); // eje X mundo -> W/S
+    const FVector RightDir   = FVector(0.f, 1.f, 0.f); // eje Y mundo -> A/D
+
+    AddMovementInput(ForwardDir, MovementVector.Y);
+    AddMovementInput(RightDir,   MovementVector.X);
 }
 
 void AMG_Character::DoLook(const FInputActionValue& Value)
 {
     FVector2D LookVector = Value.Get<FVector2D>();
-    UE_LOG(LogTemp, Warning, TEXT("Look X: %f, Y: %f"), LookVector.X, LookVector.Y);
     AddControllerYawInput(LookVector.X);
     AddControllerPitchInput(LookVector.Y);
 }
@@ -87,12 +84,13 @@ void AMG_Character::DoJumpEnd()
     StopJumping();
 }
 
-//  Replicacion 
+// ── Replicacion ───────────────────────────────────────────────────────────────
 
 void AMG_Character::GetLifetimeReplicatedProps(
     TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    DOREPLIFETIME(AMG_Character, bIsCarrying);
     DOREPLIFETIME(AMG_Character, CarriedPointValue);
 }
 
@@ -102,7 +100,7 @@ void AMG_Character::OnRep_IsCarrying()
         bIsCarrying ? TEXT("Carrying") : TEXT("Empty"));
 }
 
-//  RPCs 
+// ── RPCs ──────────────────────────────────────────────────────────────────────
 
 void AMG_Character::Server_PickupObject_Implementation()
 {
@@ -137,7 +135,7 @@ void AMG_Character::Multicast_PlayPickupEffect_Implementation()
     UE_LOG(LogTemp, Warning, TEXT("Pickup effect played on all clients"));
 }
 
-//  Overlap 
+// ── Overlap ───────────────────────────────────────────────────────────────────
 
 void AMG_Character::OnOverlapBegin(
     UPrimitiveComponent* OverlappedComp,
@@ -151,10 +149,11 @@ void AMG_Character::OnOverlapBegin(
     if (bIsCarrying) return;
 
     AMG_Collectable* Collectable = Cast<AMG_Collectable>(OtherActor);
-    if (Collectable && !bIsCarrying)
+    if (Collectable && !Collectable->bIsPickedUp)
     {
+        bIsCarrying = true; // Set inmediato para bloquear overlaps simultáneos
         CarriedPointValue = Collectable->PointValue;
-        Server_PickupObject();
+        Multicast_PlayPickupEffect();
         Collectable->PickUp();
     }
 }

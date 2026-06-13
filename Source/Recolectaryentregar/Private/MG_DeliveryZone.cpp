@@ -65,8 +65,15 @@ void AMG_DeliveryZone::OnOverlapBegin(
 
         // Sumar al equipo correcto en GameState
         if (TeamID == 0)
+        {
             GS->ScoreTeamRed += Points;
+            GS->FruitsTeamRed += 1;
+        }
         else
+        {
             GS->ScoreTeamBlue += Points;
+            GS->FruitsTeamBlue += 1;
+        }
     }
+   
 }

@@ -5,6 +5,7 @@ void AMG_GameState::GetLifetimeReplicatedProps(
     TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
     DOREPLIFETIME(AMG_GameState, TimeRemaining);
     DOREPLIFETIME(AMG_GameState, GlobalScore);
     DOREPLIFETIME(AMG_GameState, bGameActive);
@@ -12,6 +13,8 @@ void AMG_GameState::GetLifetimeReplicatedProps(
     DOREPLIFETIME(AMG_GameState, ScoreTeamBlue);
     DOREPLIFETIME(AMG_GameState, MatchPhase);
     DOREPLIFETIME(AMG_GameState, CountdownValue);
+    DOREPLIFETIME(AMG_GameState, FruitsTeamRed);
+    DOREPLIFETIME(AMG_GameState, FruitsTeamBlue);
 }
 
 void AMG_GameState::OnRep_GameActive()
@@ -20,29 +23,18 @@ void AMG_GameState::OnRep_GameActive()
         bGameActive ? TEXT("Active") : TEXT("Inactive"));
 }
 
-void AMG_GameState::OnRep_MatchPhase()
-{
-    UE_LOG(LogTemp, Warning, TEXT("MatchPhase changed"));
-}
-
 void AMG_GameState::SetMatchPhase(EMatchPhase NewPhase)
 {
-    if (HasAuthority())
-    {
-        MatchPhase = NewPhase;
-        bGameActive = (NewPhase == EMatchPhase::Playing);
-        OnRep_MatchPhase();
-    }
+    MatchPhase = NewPhase;
+    bGameActive = (NewPhase == EMatchPhase::Playing);
 }
 
-void AMG_GameState::SetCountdownValue(int32 Value)
+void AMG_GameState::SetCountdownValue(int32 NewValue)
 {
-    if (HasAuthority())
-        CountdownValue = Value;
+    CountdownValue = NewValue;
 }
 
-void AMG_GameState::SetMatchTimer(float Value)
+void AMG_GameState::SetMatchTimer(float NewTime)
 {
-    if (HasAuthority())
-        TimeRemaining = Value;
+    TimeRemaining = NewTime;
 }

@@ -6,6 +6,7 @@ void AMG_PlayerController::BeginPlay()
 
     if (IsLocalController())
     {
+        // Camara fija
         AActor* CamaraFija = nullptr;
         for (TActorIterator<ACameraActor> It(GetWorld()); It; ++It)
         {
@@ -16,6 +17,16 @@ void AMG_PlayerController::BeginPlay()
         if (CamaraFija)
         {
             SetViewTarget(CamaraFija);
+        }
+
+        // Crear y mostrar el HUD
+        if (HUDWidgetClass)
+        {
+            HUDWidgetInstance = CreateWidget<UUserWidget>(this, HUDWidgetClass);
+            if (HUDWidgetInstance)
+            {
+                HUDWidgetInstance->AddToViewport();
+            }
         }
     }
 }
